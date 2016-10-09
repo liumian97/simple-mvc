@@ -8,19 +8,16 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * 模拟Spring MVC中的DispatcherServlet
+ * 使用Filter进行分发
  *
  * Created by liumian on 2016/10/9.
  */
-public class DispatcherServlet extends GenericServlet {
+public class DispatcherFilter implements Filter {
 
     private Dispatcher dispatcher;
 
-
-    @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-        dispatcher = new Dispatcher(new DispatcherStrategy(config));
+    public void init(FilterConfig filterConfig) throws ServletException {
+        dispatcher = new Dispatcher(new DispatcherStrategy(filterConfig));
         dispatcher.init();
     }
 
@@ -28,22 +25,21 @@ public class DispatcherServlet extends GenericServlet {
      * 在这里进行分发请求
      * @param servletRequest
      * @param servletResponse
-     * @throws ServletException
+     * @param filterChain
      * @throws IOException
+     * @throws ServletException
      */
-    public void service(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         if(dispatcher.doDispatcher(request,response)){
-            
+            // TODO: 2016/10/9  如何处理其它的过滤器
         }else {
-            // TODO: 2016/10/9 跳转到 404页面 
+            filterChain.doFilter(servletRequest,servletResponse);
         }
     }
 
-    @Override
     public void destroy() {
-        super.destroy();
-    }
 
+    }
 }
