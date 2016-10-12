@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * 作用参照Spring MVC 中的RequestMapping🎍注解
+ * 目前只针对两种返回值：View接口和String类型
  *
  * Created by liumian on 2016/10/9.
  */
@@ -17,6 +18,6 @@ public @interface RequestMapping {
 
     String uri();
 
-    String method() default "GET";
+    RequestMethod method() default RequestMethod.GET;
 
 }

@@ -6,14 +6,11 @@ import win.liumian.ioc.BeanFactory;
 import win.liumian.ioc.FactoryBean;
 import win.liumian.mvc.annotation.RequestMapping;
 import win.liumian.mvc.config.DispatcherStrategy;
-import win.liumian.mvc.support.Action;
-import win.liumian.util.classloader.SimpleClassLoader;
+import win.liumian.mvc.support.action.Action;
 import win.liumian.util.exception.InitializeException;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
@@ -100,9 +97,9 @@ public class Dispatcher {
     }
 
 
-    public boolean doDispatcher(HttpServletRequest request, HttpServletResponse response) {
+    public boolean doDispatch(HttpServletRequest request, HttpServletResponse response) {
 
-        String uri = request.getRequestURI();
+        String uri = request.getServletPath();
         if(actionMap.containsKey(uri)){
 
             return true;

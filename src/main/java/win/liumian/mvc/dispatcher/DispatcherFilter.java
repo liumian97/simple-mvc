@@ -32,7 +32,7 @@ public class DispatcherFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-        if(dispatcher.doDispatcher(request,response)){
+        if(dispatcher.doDispatch(request,response)){
             // TODO: 2016/10/9  如何处理其它的过滤器
         }else {
             filterChain.doFilter(servletRequest,servletResponse);

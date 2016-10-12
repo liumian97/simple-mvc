@@ -34,7 +34,7 @@ public class DispatcherServlet extends GenericServlet {
     public void service(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-        if(dispatcher.doDispatcher(request,response)){
+        if(dispatcher.doDispatch(request,response)){
             
         }else {
             // TODO: 2016/10/9 跳转到 404页面 

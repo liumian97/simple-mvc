@@ -1,9 +1,6 @@
-package win.liumian.mvc.support;
+package win.liumian.mvc.support.action;
 
 import org.springframework.util.Assert;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * 开发人员设置的每一个uri都是一个Action
