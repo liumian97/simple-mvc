@@ -34,8 +34,9 @@ public class DispatcherServlet extends GenericServlet {
     public void service(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-        if(dispatcher.doDispatch(request,response)){
-            
+        String viewPath = dispatcher.doDispatch(request,response);
+        if(viewPath != null){
+            request.getRequestDispatcher(viewPath).forward(request,response);
         }else {
             // TODO: 2016/10/9 跳转到 404页面 
         }
@@ -44,6 +45,15 @@ public class DispatcherServlet extends GenericServlet {
     @Override
     public void destroy() {
         super.destroy();
+    }
+
+
+    /**
+     * 向浏览器输出 404或者400 状态码
+     * @param code
+     */
+    private void outputStateCode(int code){
+
     }
 
 }

@@ -1,10 +1,14 @@
 package win.liumian.mvc.support.action;
 
 import org.springframework.util.Assert;
+import win.liumian.mvc.annotation.RequestMethod;
+import win.liumian.util.exception.BuilderException;
+
+import java.util.Map;
 
 /**
  * 开发人员设置的每一个uri都是一个Action
- *
+ * <p>
  * Created by liumian on 2016/10/9.
  */
 public class Action {
@@ -13,16 +17,16 @@ public class Action {
     private String uri;
 
     //请求方式，GET、POST
-    private String method;
+    private RequestMethod method;
 
-    //请求参数类型
-    private Class<?>[] args;
+    //方法的形参和类型
+    private Map<String, Class<?>> args;
 
     //私有化构造方法
     private Action() {
     }
 
-    public static class ActionBuilder{
+    public static class ActionBuilder {
 
         private Action action;
 
@@ -30,25 +34,30 @@ public class Action {
             action = new Action();
         }
 
-        public void setUri(String uri){
+        public void setUri(String uri) {
             action.setUri(uri);
         }
 
-        public void setMethod(String method){
+        public void setMethod(RequestMethod method) {
             action.setMethod(method);
         }
 
-        public void setArgs(Class<?>[] args){
+        public void setArgs(Map<String, Class<?>> args) {
             action.setArgs(args);
         }
 
-        public Action build(){
+        public Action build() throws BuilderException {
 
-            Assert.isNull(action.args,"args must be initialized");
-            Assert.isNull(action.method,"method must be initialized");
-            Assert.isNull(action.uri,"uri must be initialized");
+            check();
 
             return action;
+        }
+
+        private void check() throws BuilderException {
+            if (action.uri == null ||
+                    action.args == null ||
+                    action.method == null)
+                throw new BuilderException("Action all field must be initialize");
         }
 
     }
@@ -57,23 +66,24 @@ public class Action {
         this.uri = uri;
     }
 
-    private void setMethod(String method) {
-        this.method = method;
-    }
-
-    private void setArgs(Class<?>[] args) {
-        this.args = args;
-    }
 
     public String getUri() {
         return uri;
     }
 
-    public String getMethod() {
+    public RequestMethod getMethod() {
         return method;
     }
 
-    public Class<?>[] getArgs() {
+    public void setMethod(RequestMethod method) {
+        this.method = method;
+    }
+
+    public Map<String, Class<?>> getArgs() {
         return args;
+    }
+
+    public void setArgs(Map<String, Class<?>> args) {
+        this.args = args;
     }
 }
