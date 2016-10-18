@@ -41,17 +41,6 @@ public class SpringBeanFactory implements BeanFactory {
     }
 
     public List<Object> getAllControllers() throws InitializeException {
-
-        String[] names = applicationContext.getBeanDefinitionNames();
-        if (names == null || names.length == 0) {
-            log.error("controller size at least one");
-            throw new InitializeException("controller size at least one");
-        }
-        controllers = new AttributeList(names.length);
-
-        for (String name : names) {
-            controllers.add(applicationContext.getBean(name));
-        }
         return controllers;
     }
 

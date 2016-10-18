@@ -3,23 +3,21 @@ package win.liumian.mvc.mv;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
+import java.util.Set;
 
 /**
- * spring 是使用Template设计模式处理的，我们暂时先直接继承，以后会改进
- * <p>
- * Created by liumian on 2016/10/11.
+ * Created by liumian on 2016/10/18.
  */
-public class JspView extends AbstractView {
+public class JspView extends ViewTemplate {
 
 
-    public JspView(String path) {
-        super(path);
-    }
+    protected void doRender(Model model, HttpServletRequest request, HttpServletResponse response) {
 
-    public void render(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Map<String,Object> values = model.getData();
 
-        for (Map.Entry<String,?> entry:model.entrySet()){
-            request.setAttribute(entry.getKey(),entry.getValue());
+        Set<String> keys = values.keySet();
+        for (String key:keys){
+            request.setAttribute(key,values.get(key));
         }
 
     }

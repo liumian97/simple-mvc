@@ -1,6 +1,7 @@
 package win.liumian.mvc.dispatcher;
 
 import win.liumian.mvc.config.DispatcherStrategy;
+import win.liumian.mvc.mv.View;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -34,12 +35,12 @@ public class DispatcherServlet extends GenericServlet {
     public void service(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-        String viewPath = dispatcher.doDispatch(request,response);
-        if(viewPath != null){
-            request.getRequestDispatcher(viewPath).forward(request,response);
+        if(dispatcher.doService(request,response)){
+            return;
         }else {
-            // TODO: 2016/10/9 跳转到 404页面 
+            // TODO: 2016/10/18 400 状态码
         }
+
     }
 
     @Override

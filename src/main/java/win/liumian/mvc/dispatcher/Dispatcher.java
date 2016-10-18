@@ -13,16 +13,18 @@ import win.liumian.ioc.BeanFactory;
 import win.liumian.ioc.FactoryBean;
 import win.liumian.mvc.annotation.RequestMapping;
 import win.liumian.mvc.config.DispatcherStrategy;
+import win.liumian.mvc.mv.View;
 import win.liumian.mvc.support.action.Action;
+import win.liumian.mvc.support.action.Param;
+import win.liumian.util.exception.ActionException;
 import win.liumian.util.exception.BuilderException;
 import win.liumian.util.exception.InitializeException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 真正分发请求的地方
@@ -91,7 +93,9 @@ public class Dispatcher {
                         Action action = initAction(method, obj.getClass());
                         actionMap.put(action.getUri(), action);
                     } catch (BuilderException e) {
-                        log.error("Action '" + method.getName() + "' initial fail:"
+                        log.error("Action '"
+                                + method.getName()
+                                + "' initial fail:"
                                 + e.getMessage());
                     }
 
@@ -104,13 +108,17 @@ public class Dispatcher {
 
     }
 
-    private Action initAction(Method method, Class clazz) throws BuilderException {
+    private Action initAction(Method method, Object instance) throws BuilderException {
         Action.ActionBuilder builder = new Action.ActionBuilder();
         RequestMapping mapping = method.getAnnotation(RequestMapping.class);
         builder.setUri(mapping.uri());
-        builder.setMethod(mapping.method());
+        builder.setRequestMethod(mapping.method());
+        builder.setMethod(method);
+        builder.setInstance(instance);
 
-        Map<String, Class<?>> args = new HashMap<String, Class<?>>();
+        // 确定访问顺序
+        List<Param> params = new ArrayList<Param>();
+        Class clazz = instance.getClass();
 
         try {
             ClassPool pool = ClassPool.getDefault();
@@ -126,36 +134,59 @@ public class Dispatcher {
             CtClass[] types = cm.getParameterTypes();
             int pos = Modifier.isStatic(cm.getModifiers()) ? 0 : 1;
             for (int i = 0; i < types.length; i++) {
-                args.put(attr.variableName(i+pos),
-                        types[i].getClass());
+                params.add(new Param(attr.variableName(i + pos), types[i].getClass()));
             }
 
-            builder.setArgs(args);
+            builder.setParams(params);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-
         return builder.build();
     }
 
 
-    public String doDispatch(HttpServletRequest request, HttpServletResponse response) {
+    public boolean doService(HttpServletRequest request, HttpServletResponse response){
+        Object result = doDispatch(request,response);
+        if(result instanceof View){
+            View view = (View) result;
+            view.render(request,response);
+            return true;
+        }else {
+            return false;
+        }
+
+    }
+
+
+    private Object doDispatch(HttpServletRequest request, HttpServletResponse response) {
 
         String uri = request.getServletPath();
         if (actionMap.containsKey(uri)) {
             Action action = actionMap.get(uri);
-//            action.
+            Object result = null;
+            try {
+                result = action.doAction(request, response);
+            } catch (ActionException e) {
+                log.error("invoke method :"
+                        + action.getMethod().getName()
+                        + " occurs error");
+                // TODO: 2016/10/14 发送状态码 400
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
 
-            return null;
+            return result;
         } else {
+            // TODO: 2016/10/14 发送状态码 404
             return null;
         }
 
     }
 
 
-    private Action matchAction(String requestUri){
+    private Action matchAction(String requestUri) {
 
         return null;
     }

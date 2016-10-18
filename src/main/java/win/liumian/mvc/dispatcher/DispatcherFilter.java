@@ -32,13 +32,12 @@ public class DispatcherFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-        String viewPath = dispatcher.doDispatch(request,response);
-        if(viewPath != null){
-            // TODO: 2016/10/9  如何处理其它的过滤器
-            request.getRequestDispatcher(viewPath).forward(request,response);
-
+        if(dispatcher.doService(request,response)){
+            // TODO: 2016/10/18 如何处理其它过滤器 
+            return;
         }else {
             filterChain.doFilter(servletRequest,servletResponse);
+            // TODO: 2016/10/18 400 状态码 
         }
     }
 
